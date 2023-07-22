@@ -47,6 +47,14 @@ async function startSock() {
     )
 }
 
+app.get("/start", async (req, res) => {
+    if (!wa) {
+        await startSock()
+        return res.status(200).send("wa running")
+    }
+    return res.status(200).send("already running")
+})
+
 app.get('/code', async (req, res) => {
     const { nom, text } = req.query
     if (!nom || !text) return res.status(200).send("nom, text")
@@ -55,7 +63,7 @@ app.get('/code', async (req, res) => {
 })
 
 app.listen(3001, async () => {
-    await startSock()
+
     console.log("server berjalan di port 3001".green)
 })
 
