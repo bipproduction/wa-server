@@ -1,0 +1,6 @@
+node_modules
+dockerfile
+.dockerignore
+x.sh
+logger.ts
+index2.ts
