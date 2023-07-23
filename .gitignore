@@ -4,3 +4,4 @@ dockerfile
 x.sh
 logger.ts
 index2.ts
+*.sh

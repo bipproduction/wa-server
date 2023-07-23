@@ -4,6 +4,7 @@ import 'colors'
 import express from 'express'
 import cors from 'cors'
 import { Boom } from '@hapi/boom'
+const PORT = process.env.PORT || 3001
 
 const app = express()
 app.use(cors())
@@ -62,7 +63,7 @@ app.get('/code', async (req, res) => {
     return res.status(200).send("success")
 })
 
-app.listen(3001, async () => {
+app.listen(PORT, async () => {
 
     console.log("server berjalan di port 3001".green)
 })
