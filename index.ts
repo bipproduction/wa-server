@@ -5,6 +5,8 @@ import express from 'express'
 import cors from 'cors'
 import { Boom } from '@hapi/boom'
 const PORT = process.env.PORT || 3001
+import { v4 } from 'uuid'
+
 
 const app = express()
 app.use(cors())
@@ -39,7 +41,6 @@ async function startSock() {
 
     sock.ev.process(
         async (events) => {
-
             if (events['creds.update']) {
                 await saveCreds()
             }
@@ -57,14 +58,22 @@ app.get("/start", async (req, res) => {
 })
 
 app.get('/code', async (req, res) => {
+
+    if (!wa) {
+        await startSock()
+    }
+
     const { nom, text } = req.query
     if (!nom || !text) return res.status(200).send("nom, text")
     await wa.sendMessage(nom + "@s.whatsapp.net", { text: text as string })
-    return res.status(200).send("success")
+    console.log(nom, text)
+    return res.status(200).json({
+        status: "success",
+        id: v4()
+    })
 })
 
 app.listen(PORT, async () => {
-
     console.log("server berjalan di port 3001".green)
 })
 
