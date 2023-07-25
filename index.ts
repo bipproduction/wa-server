@@ -65,10 +65,6 @@ app.get("/start", handler(async (req: any, res: any) => {
 
 app.get('/code', handler(async (req: any, res: any) => {
 
-    if (!wa) {
-        await startSock()
-    }
-
     const { nom, text } = req.query
     if (!nom || !text) return res.status(200).send("nom, text")
     await wa.sendMessage(nom + "@s.whatsapp.net", { text: text as string })
