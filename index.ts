@@ -50,6 +50,10 @@ async function startSock() {
     )
 }
 
+app.get("/", (req, res) => {
+    res.status(200).send("hi")
+})
+
 app.get("/start", async (req, res) => {
     if (!wa) {
         await startSock()
