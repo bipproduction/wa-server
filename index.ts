@@ -22,6 +22,7 @@ async function startSock() {
     const sock = makeWASocket({
         printQRInTerminal: true,
         auth: state,
+        keepAliveIntervalMs: 5000,
     })
 
     sock.ev.on('connection.update', async (update: any) => {
