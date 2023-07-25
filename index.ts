@@ -6,6 +6,7 @@ import cors from 'cors'
 import { Boom } from '@hapi/boom'
 const PORT = process.env.PORT || 3001
 import { v4 } from 'uuid'
+import handler from 'express-async-handler'
 
 
 const app = express()
@@ -54,15 +55,15 @@ app.get("/", (req, res) => {
     res.status(200).send("hi")
 })
 
-app.get("/start", async (req, res) => {
+app.get("/start", handler(async (req: any, res: any) => {
     if (!wa) {
         await startSock()
         return res.status(200).send("wa running")
     }
     return res.status(200).send("already running")
-})
+}))
 
-app.get('/code', async (req, res) => {
+app.get('/code', handler(async (req: any, res: any) => {
 
     if (!wa) {
         await startSock()
@@ -76,7 +77,7 @@ app.get('/code', async (req, res) => {
         status: "success",
         id: v4()
     })
-})
+}))
 
 app.listen(PORT, async () => {
     console.log("server berjalan di port 3001".green)
