@@ -5,4 +5,4 @@ x.sh
 logger.ts
 index2.ts
 *.sh
-baileys_auth_info
+auth
