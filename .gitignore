@@ -5,4 +5,5 @@ x.sh
 logger.ts
 index2.ts
 *.sh
+# tidak mengikutkan wa session auth
 auth
