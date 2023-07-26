@@ -44,19 +44,15 @@ const uuid_1 = require("uuid");
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const http_1 = __importDefault(require("http"));
 const socket_io_1 = require("socket.io");
+const fs_1 = __importDefault(require("fs"));
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
+app.use(express_1.default.json());
 const server = http_1.default.createServer(app);
 const io = new socket_io_1.Server(server);
 app.use(express_1.default.static(__dirname + '/public'));
 io.on('connection', (socket) => {
     console.log('A new user connected');
-    // Listen for the 'chat message' event
-    socket.on('chat message', (message) => {
-        console.log('Message received:', message);
-        // Broadcast the message to all connected clients (including the sender)
-        io.emit('chat message', message);
-    });
     // Listen for the 'disconnect' event
     socket.on('disconnect', () => {
         console.log('User disconnected');
@@ -65,7 +61,7 @@ io.on('connection', (socket) => {
 var wa;
 function startSock() {
     return __awaiter(this, void 0, void 0, function* () {
-        const { state, saveCreds } = yield (0, baileys_1.useMultiFileAuthState)('baileys_auth_info');
+        const { state, saveCreds } = yield (0, baileys_1.useMultiFileAuthState)('auth');
         const sock = (0, baileys_1.default)({
             // printQRInTerminal: true,
             auth: state,
@@ -86,9 +82,28 @@ function startSock() {
                 console.log('opened connection'.green);
                 wa = sock;
             }
-            if (update.qr) {
-                console.log("QR UPDATE".yellow);
+            if (update.qr != undefined && update.qr != null) {
+                console.log("QR UPDATE".yellow, update.qr);
                 io.emit('qr', update.qr);
+                // qrCode.generate(update.qr, {
+                //     small: true
+                // })
+            }
+            if (update.connection) {
+                io.emit("con", update.connection);
+                console.log("con".cyan);
+            }
+            if (update.isNewLogin) {
+                io.emit("new", update.isNewLogin);
+                console.log("new".cyan);
+            }
+            if (update.isOnline) {
+                io.emit("online", update.isOnline);
+                console.log("online".cyan);
+            }
+            if (update.lastDisconnect) {
+                io.emit("dis", update.lastDisconnect);
+                console.log("dis".cyan);
             }
         }));
         sock.ev.process((events) => __awaiter(this, void 0, void 0, function* () {
@@ -98,6 +113,18 @@ function startSock() {
         }));
     });
 }
+app.post('/reset', (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { pwd } = req.body;
+    if (!pwd)
+        return res.status(404);
+    if (pwd === 1234) {
+        if (fs_1.default.existsSync("auth")) {
+            fs_1.default.unlinkSync("./auth");
+            console.log("success");
+        }
+    }
+    res.status(200).send("ok");
+})));
 app.get('/test', (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     io.emit("test", "test");
     res.status(200).send("ok");
@@ -110,10 +137,14 @@ app.get("/start", (0, express_async_handler_1.default)((req, res) => __awaiter(v
     return res.status(200).send("already running");
 })));
 app.get('/code', (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!wa) {
+        yield startSock();
+        return res.status(200).send("start wa, please repeate message");
+    }
     const { nom, text } = req.query;
     if (!nom || !text)
         return res.status(200).send("nom, text");
-    yield wa.sendMessage(nom + "@s.whatsapp.net", { text: text });
+    yield wa.sendMessage(nom + "@s.whatsapp.net", { text: decodeURIComponent(text) });
     console.log(nom, text);
     return res.status(200).json({
         status: "success",
