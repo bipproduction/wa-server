@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Socket.IO Chat</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="
+https://cdn.jsdelivr.net/npm/jquery.qrcode@1.0.3/jquery.qrcode.min.js
+"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+</head>
+
+<body>
+
+
+
+    <center>
+        <div>
+            <div id="info"></div>
+            <div id="qrcode"></div>
+            <div id="des"></div>
+        </div>
+    </center>
+    <script>
+
+        const socket = io();
+        $.get('/start', res => {
+            console.log(res)
+            document.getElementById('info').innerHTML = res
+        })
+
+        socket.on("qr", data => {
+            console.log(data)
+            document.getElementById("qrcode").innerHTML = ""
+            $('#qrcode').qrcode(data);
+            document.getElementById("des").innerHTML = "SCAN QRCODE"
+        })
+
+        socket.on("new", (data) => {
+            document.getElementById("qrcode").innerHTML = ""
+            document.getElementById("des").innerHTML = ""
+        })
+
+
+    </script>
+
+
+</body>
+
+</html>
