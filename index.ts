@@ -47,7 +47,7 @@ async function startSock() {
         const { connection, lastDisconnect } = update as any
         if (connection === 'close') {
             const shouldReconnect = (lastDisconnect.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut
-            console.log('connection closed due to '.red, lastDisconnect.error, ', reconnecting '.yellow, shouldReconnect)
+            //console.log('connection closed due to '.red, lastDisconnect.error, ', reconnecting '.yellow, shouldReconnect)
             // reconnect if not logged out
             if (shouldReconnect) {
                 return await startSock()
