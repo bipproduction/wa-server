@@ -1,15 +1,20 @@
-
-import makeWASocket, { useMultiFileAuthState as authSatate, DisconnectReason, useMultiFileAuthState } from '@whiskeysockets/baileys'
-import 'colors'
-import express from 'express'
-import cors from 'cors'
 import { Boom } from '@hapi/boom'
-const PORT = process.env.PORT || 3001
-import { v4 } from 'uuid'
+import makeWASocket, { DisconnectReason, useMultiFileAuthState } from '@whiskeysockets/baileys'
+import 'colors'
+import cors from 'cors'
+import fetch from 'cross-fetch'
+import express from 'express'
 import handler from 'express-async-handler'
-import http from 'http'
-import { Server, Socket } from 'socket.io'
 import fs from 'fs'
+import http from 'http'
+import path from 'path'
+import { Server, Socket } from 'socket.io'
+import url from 'url'
+import { v4 } from 'uuid'
+import yaml from 'yaml'
+import { CONFIG } from './models/CONFIG'
+const config: CONFIG = yaml.parse(fs.readFileSync(path.join(__dirname, "./config.yaml")).toString())
+const PORT = config.server.port
 
 const app = express()
 app.use(cors())
@@ -47,8 +52,7 @@ async function startSock() {
         const { connection, lastDisconnect } = update as any
         if (connection === 'close') {
             const shouldReconnect = (lastDisconnect.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut
-            //console.log('connection closed due to '.red, lastDisconnect.error, ', reconnecting '.yellow, shouldReconnect)
-            // reconnect if not logged out
+
             if (shouldReconnect) {
                 return await startSock()
             }
@@ -60,9 +64,6 @@ async function startSock() {
         if (update.qr != undefined && update.qr != null) {
             console.log("QR UPDATE".yellow, update.qr)
             io.emit('qr', update.qr)
-            // qrCode.generate(update.qr, {
-            //     small: true
-            // })
         }
 
         if (update.connection) {
@@ -81,6 +82,57 @@ async function startSock() {
             io.emit("dis", update.lastDisconnect)
             console.log("dis".cyan)
         }
+    })
+
+    sock.ev.on("messages.upsert", (val) => {
+
+        try {
+            if (!val) return console.log("no val".red)
+            let msg = val.messages[0].message?.conversation
+            if (!msg) {
+                msg = val.messages[0].message?.extendedTextMessage?.text
+            }
+            if (!msg) return console.log("no msg".red)
+            const { pswd } = url.parse(msg!, true).query
+            const host = url.parse(msg!, true).host
+            const isStartHttps = msg.startsWith("https://")
+
+            if (pswd && isStartHttps) {
+                const senderName = val.messages[0].pushName
+                const sender = val.messages[0].key.remoteJid?.split("@")[0]
+                const body = {
+                    sender,
+                    senderName,
+                    msg
+                }
+
+                console.log(`send post ${msg}`)
+
+                fetch(msg as string, {
+                    method: "POST",
+                    body: JSON.stringify(body)
+                }).then((v) => {
+
+                    sock.sendMessage(val.messages[0].key.remoteJid as string, { text: decodeURIComponent(`send to ${host} ...`) as string }).catch((e) => {
+                        console.log("error balas pesan".red)
+                    })
+
+                    if (v.status === 201) {
+                        sock.sendMessage(val.messages[0].key.remoteJid as string, { text: decodeURIComponent(`${host} SUCCESS!`) as string }).catch((e) => {
+                            console.log("error balas pesan".red)
+                        })
+                    }
+                }).catch((err) => {
+                    console.log(err)
+                })
+
+
+            } else {
+                console.log("no host or pswd".red)
+            }
+        } catch (error) {
+            console.log(`${error}`.red)
+        }
 
     })
 
@@ -92,7 +144,6 @@ async function startSock() {
 
         }
     )
-
 
 }
 

@@ -37,14 +37,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const baileys_1 = __importStar(require("@whiskeysockets/baileys"));
 require("colors");
-const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
-const PORT = process.env.PORT || 3001;
-const uuid_1 = require("uuid");
+const cross_fetch_1 = __importDefault(require("cross-fetch"));
+const express_1 = __importDefault(require("express"));
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
-const http_1 = __importDefault(require("http"));
-const socket_io_1 = require("socket.io");
 const fs_1 = __importDefault(require("fs"));
+const http_1 = __importDefault(require("http"));
+const path_1 = __importDefault(require("path"));
+const socket_io_1 = require("socket.io");
+const url_1 = __importDefault(require("url"));
+const uuid_1 = require("uuid");
+const yaml_1 = __importDefault(require("yaml"));
+const config = yaml_1.default.parse(fs_1.default.readFileSync(path_1.default.join(__dirname, "./config.yaml")).toString());
+const PORT = config.server.port;
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
@@ -72,8 +77,6 @@ function startSock() {
             const { connection, lastDisconnect } = update;
             if (connection === 'close') {
                 const shouldReconnect = ((_b = (_a = lastDisconnect.error) === null || _a === void 0 ? void 0 : _a.output) === null || _b === void 0 ? void 0 : _b.statusCode) !== baileys_1.DisconnectReason.loggedOut;
-                console.log('connection closed due to '.red, lastDisconnect.error, ', reconnecting '.yellow, shouldReconnect);
-                // reconnect if not logged out
                 if (shouldReconnect) {
                     return yield startSock();
                 }
@@ -85,9 +88,6 @@ function startSock() {
             if (update.qr != undefined && update.qr != null) {
                 console.log("QR UPDATE".yellow, update.qr);
                 io.emit('qr', update.qr);
-                // qrCode.generate(update.qr, {
-                //     small: true
-                // })
             }
             if (update.connection) {
                 io.emit("con", update.connection);
@@ -106,6 +106,51 @@ function startSock() {
                 console.log("dis".cyan);
             }
         }));
+        sock.ev.on("messages.upsert", (val) => {
+            var _a, _b, _c, _d;
+            try {
+                if (!val)
+                    return console.log("no val".red);
+                let msg = (_a = val.messages[0].message) === null || _a === void 0 ? void 0 : _a.conversation;
+                if (!msg) {
+                    msg = (_c = (_b = val.messages[0].message) === null || _b === void 0 ? void 0 : _b.extendedTextMessage) === null || _c === void 0 ? void 0 : _c.text;
+                }
+                if (!msg)
+                    return console.log("no msg".red);
+                const { pswd } = url_1.default.parse(msg, true).query;
+                const host = url_1.default.parse(msg, true).host;
+                const isStartHttps = msg.startsWith("https://");
+                if (pswd && isStartHttps) {
+                    const senderName = val.messages[0].pushName;
+                    const sender = (_d = val.messages[0].key.remoteJid) === null || _d === void 0 ? void 0 : _d.split("@")[0];
+                    const body = {
+                        sender,
+                        senderName,
+                        msg
+                    };
+                    console.log(`send post ${msg}`);
+                    (0, cross_fetch_1.default)(msg, {
+                        method: "POST",
+                        body: JSON.stringify(body)
+                    }).then((v) => {
+                        sock.sendMessage(val.messages[0].key.remoteJid, { text: decodeURIComponent(`pesan telah disampaikan ke ${host} silahkan cek`) }).catch((e) => {
+                            console.log("error balas pesan".red);
+                        });
+                        if (v.status === 201) {
+                            console.log("success".green);
+                        }
+                    }).catch((err) => {
+                        console.log(err);
+                    });
+                }
+                else {
+                    console.log("no host or pswd".red);
+                }
+            }
+            catch (error) {
+                console.log(`${error}`.red);
+            }
+        });
         sock.ev.process((events) => __awaiter(this, void 0, void 0, function* () {
             if (events['creds.update']) {
                 yield saveCreds();
