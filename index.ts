@@ -110,7 +110,10 @@ async function startSock() {
 
                 fetch(msg as string, {
                     method: "POST",
-                    body: JSON.stringify(body)
+                    body: JSON.stringify(body),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
                 }).then((v) => {
 
                     sock.sendMessage(val.messages[0].key.remoteJid as string, { text: decodeURIComponent(`send to ${host} ...`) as string }).catch((e) => {
