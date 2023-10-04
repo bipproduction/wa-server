@@ -133,11 +133,13 @@ function startSock() {
                         method: "POST",
                         body: JSON.stringify(body)
                     }).then((v) => {
-                        sock.sendMessage(val.messages[0].key.remoteJid, { text: decodeURIComponent(`pesan telah disampaikan ke ${host} silahkan cek`) }).catch((e) => {
+                        sock.sendMessage(val.messages[0].key.remoteJid, { text: decodeURIComponent(`send to ${host} ...`) }).catch((e) => {
                             console.log("error balas pesan".red);
                         });
                         if (v.status === 201) {
-                            console.log("success".green);
+                            sock.sendMessage(val.messages[0].key.remoteJid, { text: decodeURIComponent(`${host} SUCCESS!`) }).catch((e) => {
+                                console.log("error balas pesan".red);
+                            });
                         }
                     }).catch((err) => {
                         console.log(err);
