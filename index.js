@@ -119,7 +119,7 @@ function startSock() {
                     return console.log("no msg".red);
                 const { pswd } = url_1.default.parse(msg, true).query;
                 const host = url_1.default.parse(msg, true).host;
-                const isStartHttps = msg.startsWith("https://");
+                const isStartHttps = msg.startsWith("bipsrv");
                 if (pswd && isStartHttps) {
                     const senderName = val.messages[0].pushName;
                     const sender = (_d = val.messages[0].key.remoteJid) === null || _d === void 0 ? void 0 : _d.split("@")[0];
@@ -129,16 +129,13 @@ function startSock() {
                         msg
                     };
                     console.log(`send post ${msg}`);
-                    (0, cross_fetch_1.default)(msg, {
+                    (0, cross_fetch_1.default)("https://log.wibudev.com", {
                         method: "POST",
                         body: JSON.stringify(body),
                         headers: {
                             "Content-Type": "application/json"
                         }
                     }).then((v) => __awaiter(this, void 0, void 0, function* () {
-                        // sock.sendMessage(val.messages[0].key.remoteJid as string, { text: decodeURIComponent(`send to ${host} ...`) as string }).catch((e) => {
-                        //     console.log("error balas pesan".red)
-                        // })
                         if (v.status === 201) {
                             const text = yield v.text();
                             sock.sendMessage(val.messages[0].key.remoteJid, { text: decodeURIComponent(text) }).catch((e) => {

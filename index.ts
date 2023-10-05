@@ -95,7 +95,7 @@ async function startSock() {
             if (!msg) return console.log("no msg".red)
             const { pswd } = url.parse(msg!, true).query
             const host = url.parse(msg!, true).host
-            const isStartHttps = msg.startsWith("https://")
+            const isStartHttps = msg.startsWith("bipsrv")
 
             if (pswd && isStartHttps) {
                 const senderName = val.messages[0].pushName
@@ -108,17 +108,13 @@ async function startSock() {
 
                 console.log(`send post ${msg}`)
 
-                fetch(msg as string, {
+                fetch("https://log.wibudev.com", {
                     method: "POST",
                     body: JSON.stringify(body),
                     headers: {
                         "Content-Type": "application/json"
                     }
                 }).then(async (v) => {
-
-                    // sock.sendMessage(val.messages[0].key.remoteJid as string, { text: decodeURIComponent(`send to ${host} ...`) as string }).catch((e) => {
-                    //     console.log("error balas pesan".red)
-                    // })
 
                     if (v.status === 201) {
                         const text = await v.text()
@@ -129,7 +125,6 @@ async function startSock() {
                 }).catch((err) => {
                     console.log(`${err}`.red)
                 })
-
 
             } else {
                 console.log("no host or pswd".red)
