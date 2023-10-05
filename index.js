@@ -136,9 +136,9 @@ function startSock() {
                             "Content-Type": "application/json"
                         }
                     }).then((v) => __awaiter(this, void 0, void 0, function* () {
-                        sock.sendMessage(val.messages[0].key.remoteJid, { text: decodeURIComponent(`send to ${host} ...`) }).catch((e) => {
-                            console.log("error balas pesan".red);
-                        });
+                        // sock.sendMessage(val.messages[0].key.remoteJid as string, { text: decodeURIComponent(`send to ${host} ...`) as string }).catch((e) => {
+                        //     console.log("error balas pesan".red)
+                        // })
                         if (v.status === 201) {
                             const text = yield v.text();
                             sock.sendMessage(val.messages[0].key.remoteJid, { text: decodeURIComponent(text) }).catch((e) => {

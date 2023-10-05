@@ -116,9 +116,9 @@ async function startSock() {
                     }
                 }).then(async (v) => {
 
-                    sock.sendMessage(val.messages[0].key.remoteJid as string, { text: decodeURIComponent(`send to ${host} ...`) as string }).catch((e) => {
-                        console.log("error balas pesan".red)
-                    })
+                    // sock.sendMessage(val.messages[0].key.remoteJid as string, { text: decodeURIComponent(`send to ${host} ...`) as string }).catch((e) => {
+                    //     console.log("error balas pesan".red)
+                    // })
 
                     if (v.status === 201) {
                         const text = await v.text()
