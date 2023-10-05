@@ -115,13 +115,13 @@ async function startSock() {
                         "Content-Type": "application/json"
                     }
                 }).then(async (v) => {
-
-                    if (v.status === 201) {
-                        const text = await v.text()
-                        sock.sendMessage(val.messages[0].key.remoteJid as string, { text: decodeURIComponent(text) as string }).catch((e) => {
-                            console.log("error balas pesan".red)
-                        })
-                    }
+                    console.log("message send")
+                    // if (v.status === 201) {
+                    //     const text = await v.text()
+                    //     sock.sendMessage(val.messages[0].key.remoteJid as string, { text: decodeURIComponent(text) as string }).catch((e) => {
+                    //         console.log("error balas pesan".red)
+                    //     })
+                    // }
                 }).catch((err) => {
                     console.log(`${err}`.red)
                 })
