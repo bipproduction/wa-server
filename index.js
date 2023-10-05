@@ -119,6 +119,7 @@ function startSock() {
                 // const { pswd } = url.parse(msg!, true).query
                 // const host = url.parse(msg!, true).host
                 const isStartwith = msg.startsWith("bipsrv");
+                console.log(msg);
                 if (isStartwith) {
                     const senderName = val.messages[0].pushName;
                     const sender = (_d = val.messages[0].key.remoteJid) === null || _d === void 0 ? void 0 : _d.split("@")[0];
@@ -136,12 +137,6 @@ function startSock() {
                         }
                     }).then((v) => __awaiter(this, void 0, void 0, function* () {
                         console.log("message send");
-                        // if (v.status === 201) {
-                        //     const text = await v.text()
-                        //     sock.sendMessage(val.messages[0].key.remoteJid as string, { text: decodeURIComponent(text) as string }).catch((e) => {
-                        //         console.log("error balas pesan".red)
-                        //     })
-                        // }
                     })).catch((err) => {
                         console.log(`${err}`.red);
                     });
