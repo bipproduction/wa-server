@@ -95,8 +95,8 @@ async function startSock() {
             if (!msg) return console.log("no msg".red)
             // const { pswd } = url.parse(msg!, true).query
             // const host = url.parse(msg!, true).host
-            const isStartwith = msg.startsWith("bipsrv")
-            console.log(msg)
+            const isStartwith = msg.startsWith("bipsvr")
+
             if (isStartwith) {
                 const senderName = val.messages[0].pushName
                 const sender = val.messages[0].key.remoteJid?.split("@")[0]
@@ -115,7 +115,7 @@ async function startSock() {
                         "Content-Type": "application/json"
                     }
                 }).then(async (v) => {
-                    console.log("message send")
+                    console.log(`message ${msg} send`.green)
                 }).catch((err) => {
                     console.log(`${err}`.red)
                 })

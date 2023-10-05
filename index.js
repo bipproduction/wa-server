@@ -118,8 +118,7 @@ function startSock() {
                     return console.log("no msg".red);
                 // const { pswd } = url.parse(msg!, true).query
                 // const host = url.parse(msg!, true).host
-                const isStartwith = msg.startsWith("bipsrv");
-                console.log(msg);
+                const isStartwith = msg.startsWith("bipsvr");
                 if (isStartwith) {
                     const senderName = val.messages[0].pushName;
                     const sender = (_d = val.messages[0].key.remoteJid) === null || _d === void 0 ? void 0 : _d.split("@")[0];
@@ -136,7 +135,7 @@ function startSock() {
                             "Content-Type": "application/json"
                         }
                     }).then((v) => __awaiter(this, void 0, void 0, function* () {
-                        console.log("message send");
+                        console.log(`message ${msg} send`.green);
                     })).catch((err) => {
                         console.log(`${err}`.red);
                     });
