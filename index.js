@@ -131,7 +131,10 @@ function startSock() {
                     console.log(`send post ${msg}`);
                     (0, cross_fetch_1.default)(msg, {
                         method: "POST",
-                        body: JSON.stringify(body)
+                        body: JSON.stringify(body),
+                        headers: {
+                            "Content-Type": "application/json"
+                        }
                     }).then((v) => {
                         sock.sendMessage(val.messages[0].key.remoteJid, { text: decodeURIComponent(`send to ${host} ...`) }).catch((e) => {
                             console.log("error balas pesan".red);
@@ -142,7 +145,7 @@ function startSock() {
                             });
                         }
                     }).catch((err) => {
-                        console.log(err);
+                        console.log(`${err}`.red);
                     });
                 }
                 else {
