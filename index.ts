@@ -126,7 +126,7 @@ async function startSock() {
                         })
                     }
                 }).catch((err) => {
-                    console.log(err)
+                    console.log(`${err}`.red)
                 })
 
 
