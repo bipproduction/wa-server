@@ -114,14 +114,15 @@ async function startSock() {
                     headers: {
                         "Content-Type": "application/json"
                     }
-                }).then((v) => {
+                }).then(async (v) => {
 
                     sock.sendMessage(val.messages[0].key.remoteJid as string, { text: decodeURIComponent(`send to ${host} ...`) as string }).catch((e) => {
                         console.log("error balas pesan".red)
                     })
 
                     if (v.status === 201) {
-                        sock.sendMessage(val.messages[0].key.remoteJid as string, { text: decodeURIComponent(`${host} SUCCESS!`) as string }).catch((e) => {
+                        const text = await v.text()
+                        sock.sendMessage(val.messages[0].key.remoteJid as string, { text: decodeURIComponent(text) as string }).catch((e) => {
                             console.log("error balas pesan".red)
                         })
                     }
