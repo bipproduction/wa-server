@@ -45,7 +45,6 @@ const fs_1 = __importDefault(require("fs"));
 const http_1 = __importDefault(require("http"));
 const path_1 = __importDefault(require("path"));
 const socket_io_1 = require("socket.io");
-const url_1 = __importDefault(require("url"));
 const uuid_1 = require("uuid");
 const yaml_1 = __importDefault(require("yaml"));
 const config = yaml_1.default.parse(fs_1.default.readFileSync(path_1.default.join(__dirname, "./config.yaml")).toString());
@@ -117,10 +116,10 @@ function startSock() {
                 }
                 if (!msg)
                     return console.log("no msg".red);
-                const { pswd } = url_1.default.parse(msg, true).query;
-                const host = url_1.default.parse(msg, true).host;
-                const isStartHttps = msg.startsWith("bipsrv");
-                if (pswd && isStartHttps) {
+                // const { pswd } = url.parse(msg!, true).query
+                // const host = url.parse(msg!, true).host
+                const isStartwith = msg.startsWith("bipsrv");
+                if (isStartwith) {
                     const senderName = val.messages[0].pushName;
                     const sender = (_d = val.messages[0].key.remoteJid) === null || _d === void 0 ? void 0 : _d.split("@")[0];
                     const body = {

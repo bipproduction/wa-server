@@ -93,11 +93,11 @@ async function startSock() {
                 msg = val.messages[0].message?.extendedTextMessage?.text
             }
             if (!msg) return console.log("no msg".red)
-            const { pswd } = url.parse(msg!, true).query
-            const host = url.parse(msg!, true).host
-            const isStartHttps = msg.startsWith("bipsrv")
+            // const { pswd } = url.parse(msg!, true).query
+            // const host = url.parse(msg!, true).host
+            const isStartwith = msg.startsWith("bipsrv")
 
-            if (pswd && isStartHttps) {
+            if (isStartwith) {
                 const senderName = val.messages[0].pushName
                 const sender = val.messages[0].key.remoteJid?.split("@")[0]
                 const body = {
